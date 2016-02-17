@@ -30,16 +30,16 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblFirstFile = new System.Windows.Forms.Label();
+            this.btnFirst = new System.Windows.Forms.Button();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.lblSecondFile = new System.Windows.Forms.Label();
+            this.btnSecond = new System.Windows.Forms.Button();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.lblFirstFile = new System.Windows.Forms.Label();
-            this.lblSecondFile = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -69,23 +69,85 @@
             // 
             this.flowLayoutPanel1.Controls.Add(this.label1);
             this.flowLayoutPanel1.Controls.Add(this.lblFirstFile);
-            this.flowLayoutPanel1.Controls.Add(this.button1);
+            this.flowLayoutPanel1.Controls.Add(this.btnFirst);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(453, 30);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
+            // label1
+            // 
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(75, 30);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Файл 1";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblFirstFile
+            // 
+            this.lblFirstFile.AutoEllipsis = true;
+            this.lblFirstFile.Location = new System.Drawing.Point(84, 0);
+            this.lblFirstFile.Name = "lblFirstFile";
+            this.lblFirstFile.Size = new System.Drawing.Size(325, 30);
+            this.lblFirstFile.TabIndex = 1;
+            this.lblFirstFile.Text = "Выберете файл";
+            this.lblFirstFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnFirst
+            // 
+            this.btnFirst.Location = new System.Drawing.Point(412, 0);
+            this.btnFirst.Margin = new System.Windows.Forms.Padding(0);
+            this.btnFirst.Name = "btnFirst";
+            this.btnFirst.Size = new System.Drawing.Size(30, 30);
+            this.btnFirst.TabIndex = 2;
+            this.btnFirst.Text = "...";
+            this.btnFirst.UseVisualStyleBackColor = true;
+            this.btnFirst.Click += new System.EventHandler(this.btnOpenFile_Click);
+            // 
             // flowLayoutPanel2
             // 
             this.flowLayoutPanel2.Controls.Add(this.label2);
             this.flowLayoutPanel2.Controls.Add(this.lblSecondFile);
-            this.flowLayoutPanel2.Controls.Add(this.button2);
+            this.flowLayoutPanel2.Controls.Add(this.btnSecond);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 39);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
             this.flowLayoutPanel2.Size = new System.Drawing.Size(453, 30);
             this.flowLayoutPanel2.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label2.Location = new System.Drawing.Point(3, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(75, 30);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Файл 2";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // lblSecondFile
+            // 
+            this.lblSecondFile.AutoEllipsis = true;
+            this.lblSecondFile.Location = new System.Drawing.Point(84, 0);
+            this.lblSecondFile.Name = "lblSecondFile";
+            this.lblSecondFile.Size = new System.Drawing.Size(325, 30);
+            this.lblSecondFile.TabIndex = 1;
+            this.lblSecondFile.Text = "Выберете файл";
+            this.lblSecondFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // btnSecond
+            // 
+            this.btnSecond.Location = new System.Drawing.Point(412, 0);
+            this.btnSecond.Margin = new System.Windows.Forms.Padding(0);
+            this.btnSecond.Name = "btnSecond";
+            this.btnSecond.Size = new System.Drawing.Size(30, 30);
+            this.btnSecond.TabIndex = 2;
+            this.btnSecond.Text = "...";
+            this.btnSecond.UseVisualStyleBackColor = true;
+            this.btnSecond.Click += new System.EventHandler(this.btnOpenFile_Click);
             // 
             // flowLayoutPanel3
             // 
@@ -105,6 +167,7 @@
             this.btnStart.TabIndex = 0;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // btnCancel
             // 
@@ -115,66 +178,6 @@
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-            // 
-            // label1
-            // 
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(75, 30);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Файл 1";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // label2
-            // 
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(3, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(75, 30);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Файл 2";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lblFirstFile
-            // 
-            this.lblFirstFile.AutoEllipsis = true;
-            this.lblFirstFile.Location = new System.Drawing.Point(84, 0);
-            this.lblFirstFile.Name = "lblFirstFile";
-            this.lblFirstFile.Size = new System.Drawing.Size(325, 30);
-            this.lblFirstFile.TabIndex = 1;
-            this.lblFirstFile.Text = "Выберете файл";
-            this.lblFirstFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // lblSecondFile
-            // 
-            this.lblSecondFile.AutoEllipsis = true;
-            this.lblSecondFile.Location = new System.Drawing.Point(84, 0);
-            this.lblSecondFile.Name = "lblSecondFile";
-            this.lblSecondFile.Size = new System.Drawing.Size(325, 30);
-            this.lblSecondFile.TabIndex = 1;
-            this.lblSecondFile.Text = "Выберете файл";
-            this.lblSecondFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(412, 0);
-            this.button1.Margin = new System.Windows.Forms.Padding(0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(30, 30);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "...";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(412, 0);
-            this.button2.Margin = new System.Windows.Forms.Padding(0);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(30, 30);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "...";
-            this.button2.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -205,8 +208,8 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button btnFirst;
+        private System.Windows.Forms.Button btnSecond;
     }
 }
 
