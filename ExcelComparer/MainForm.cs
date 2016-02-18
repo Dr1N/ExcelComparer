@@ -42,15 +42,8 @@ namespace ExcelComparer
         {
             try
             {
-                string fileName = GetOpenableFileName();
-                if (sender == btnFirst)
-                {
-                    lblFirstFile.Text = fileName;
-                }
-                else if(sender == btnSecond)
-                {
-                    lblSecondFile.Text = fileName;
-                }
+                string fileName = GetDataBaseFileName();
+                lblDataBaseFile.Text = fileName;
             }
             catch (ComparerException ceex)
             {
@@ -62,11 +55,28 @@ namespace ExcelComparer
             }
         }
 
+        private void btnSelectDirectory_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string directoryPath = GetDataBasesDirectory();
+                lblDirectoryPath.Text = directoryPath;
+            }
+            catch (ComparerException ceex)
+            {
+                Debug.WriteLine(ceex, "Выбор каталога");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
         #endregion
 
         #region METHODS
-        
-        private string GetOpenableFileName()
+
+        private string GetDataBaseFileName()
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
@@ -84,6 +94,18 @@ namespace ExcelComparer
                 }
                 throw new ComparerException("Пользователь не выбрал файл");
             }
+        }
+
+        private string GetDataBasesDirectory()
+        {
+            using (FolderBrowserDialog fbd = new FolderBrowserDialog())
+            {
+                if(fbd.ShowDialog() == DialogResult.OK)
+                {
+                    return fbd.SelectedPath;
+                }
+            }
+            throw new ComparerException("Пользователь не выбрал каталог");
         }
 
         #endregion

@@ -31,12 +31,12 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
-            this.lblFirstFile = new System.Windows.Forms.Label();
-            this.btnFirst = new System.Windows.Forms.Button();
+            this.lblDirectoryPath = new System.Windows.Forms.Label();
+            this.btnSelectDirectory = new System.Windows.Forms.Button();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
-            this.lblSecondFile = new System.Windows.Forms.Label();
-            this.btnSecond = new System.Windows.Forms.Button();
+            this.lblDataBaseFile = new System.Windows.Forms.Label();
+            this.btnSelectFile = new System.Windows.Forms.Button();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
@@ -68,8 +68,8 @@
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.Controls.Add(this.label1);
-            this.flowLayoutPanel1.Controls.Add(this.lblFirstFile);
-            this.flowLayoutPanel1.Controls.Add(this.btnFirst);
+            this.flowLayoutPanel1.Controls.Add(this.lblDirectoryPath);
+            this.flowLayoutPanel1.Controls.Add(this.btnSelectDirectory);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -83,35 +83,35 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(75, 30);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Файл 1";
+            this.label1.Text = "Каталог";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblFirstFile
+            // lblDirectoryPath
             // 
-            this.lblFirstFile.AutoEllipsis = true;
-            this.lblFirstFile.Location = new System.Drawing.Point(84, 0);
-            this.lblFirstFile.Name = "lblFirstFile";
-            this.lblFirstFile.Size = new System.Drawing.Size(325, 30);
-            this.lblFirstFile.TabIndex = 1;
-            this.lblFirstFile.Text = "Выберете файл";
-            this.lblFirstFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblDirectoryPath.AutoEllipsis = true;
+            this.lblDirectoryPath.Location = new System.Drawing.Point(84, 0);
+            this.lblDirectoryPath.Name = "lblDirectoryPath";
+            this.lblDirectoryPath.Size = new System.Drawing.Size(325, 30);
+            this.lblDirectoryPath.TabIndex = 1;
+            this.lblDirectoryPath.Text = "Выберете каталог с базами";
+            this.lblDirectoryPath.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btnFirst
+            // btnSelectDirectory
             // 
-            this.btnFirst.Location = new System.Drawing.Point(412, 0);
-            this.btnFirst.Margin = new System.Windows.Forms.Padding(0);
-            this.btnFirst.Name = "btnFirst";
-            this.btnFirst.Size = new System.Drawing.Size(30, 30);
-            this.btnFirst.TabIndex = 2;
-            this.btnFirst.Text = "...";
-            this.btnFirst.UseVisualStyleBackColor = true;
-            this.btnFirst.Click += new System.EventHandler(this.btnOpenFile_Click);
+            this.btnSelectDirectory.Location = new System.Drawing.Point(412, 0);
+            this.btnSelectDirectory.Margin = new System.Windows.Forms.Padding(0);
+            this.btnSelectDirectory.Name = "btnSelectDirectory";
+            this.btnSelectDirectory.Size = new System.Drawing.Size(30, 30);
+            this.btnSelectDirectory.TabIndex = 2;
+            this.btnSelectDirectory.Text = "...";
+            this.btnSelectDirectory.UseVisualStyleBackColor = true;
+            this.btnSelectDirectory.Click += new System.EventHandler(this.btnSelectDirectory_Click);
             // 
             // flowLayoutPanel2
             // 
             this.flowLayoutPanel2.Controls.Add(this.label2);
-            this.flowLayoutPanel2.Controls.Add(this.lblSecondFile);
-            this.flowLayoutPanel2.Controls.Add(this.btnSecond);
+            this.flowLayoutPanel2.Controls.Add(this.lblDataBaseFile);
+            this.flowLayoutPanel2.Controls.Add(this.btnSelectFile);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 39);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
@@ -125,29 +125,29 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(75, 30);
             this.label2.TabIndex = 0;
-            this.label2.Text = "Файл 2";
+            this.label2.Text = "Файл";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // lblSecondFile
+            // lblDataBaseFile
             // 
-            this.lblSecondFile.AutoEllipsis = true;
-            this.lblSecondFile.Location = new System.Drawing.Point(84, 0);
-            this.lblSecondFile.Name = "lblSecondFile";
-            this.lblSecondFile.Size = new System.Drawing.Size(325, 30);
-            this.lblSecondFile.TabIndex = 1;
-            this.lblSecondFile.Text = "Выберете файл";
-            this.lblSecondFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblDataBaseFile.AutoEllipsis = true;
+            this.lblDataBaseFile.Location = new System.Drawing.Point(84, 0);
+            this.lblDataBaseFile.Name = "lblDataBaseFile";
+            this.lblDataBaseFile.Size = new System.Drawing.Size(325, 30);
+            this.lblDataBaseFile.TabIndex = 1;
+            this.lblDataBaseFile.Text = "Выберете анализируемый файл";
+            this.lblDataBaseFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // btnSecond
+            // btnSelectFile
             // 
-            this.btnSecond.Location = new System.Drawing.Point(412, 0);
-            this.btnSecond.Margin = new System.Windows.Forms.Padding(0);
-            this.btnSecond.Name = "btnSecond";
-            this.btnSecond.Size = new System.Drawing.Size(30, 30);
-            this.btnSecond.TabIndex = 2;
-            this.btnSecond.Text = "...";
-            this.btnSecond.UseVisualStyleBackColor = true;
-            this.btnSecond.Click += new System.EventHandler(this.btnOpenFile_Click);
+            this.btnSelectFile.Location = new System.Drawing.Point(412, 0);
+            this.btnSelectFile.Margin = new System.Windows.Forms.Padding(0);
+            this.btnSelectFile.Name = "btnSelectFile";
+            this.btnSelectFile.Size = new System.Drawing.Size(30, 30);
+            this.btnSelectFile.TabIndex = 2;
+            this.btnSelectFile.Text = "...";
+            this.btnSelectFile.UseVisualStyleBackColor = true;
+            this.btnSelectFile.Click += new System.EventHandler(this.btnOpenFile_Click);
             // 
             // flowLayoutPanel3
             // 
@@ -201,15 +201,15 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label lblFirstFile;
+        private System.Windows.Forms.Label lblDirectoryPath;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label lblSecondFile;
+        private System.Windows.Forms.Label lblDataBaseFile;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.Button btnCancel;
-        private System.Windows.Forms.Button btnFirst;
-        private System.Windows.Forms.Button btnSecond;
+        private System.Windows.Forms.Button btnSelectDirectory;
+        private System.Windows.Forms.Button btnSelectFile;
     }
 }
 
