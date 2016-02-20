@@ -28,6 +28,12 @@ namespace ExcelComparer
         public MainForm()
         {
             InitializeComponent();
+
+            this.directory = @"d:\My Coding\KWORK\ExcelComparer\Files\Dir\";
+            this.file = @"d:\My Coding\KWORK\ExcelComparer\Files\file1.xlsx";
+
+            this.lblDataBaseFile.Text = this.file;
+            this.lblDirectoryPath.Text = this.directory;
         }
 
         #region CONTROL EVENTS
@@ -47,6 +53,7 @@ namespace ExcelComparer
                 }
 
                 ExcelDbComparer comparer = new ExcelDbComparer(this.file, this.files);
+                comparer.RunWork();
             }
             catch (Exception ex)
             {

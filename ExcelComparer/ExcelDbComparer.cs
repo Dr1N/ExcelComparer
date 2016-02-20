@@ -18,7 +18,8 @@ namespace ExcelComparer
         private int FOIColumnIndex = 0;
         private string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;extended properties =\"excel 8.0;hdr=no;IMEX=1\";data source={0}";
         private string sheenName = "Лист1$";
-        private List<NameFromDataTable> dublicate = new List<NameFromDataTable>();
+        private List<NameFromDataTable> allDublicates = new List<NameFromDataTable>();
+        private DataTable dataTableForAnalyze;
 
         #endregion
 
@@ -35,10 +36,36 @@ namespace ExcelComparer
         public void RunWork()
         {
             LogWriter.Write("Анализируемый файл: " + this.file);
+            dataTableForAnalyze = ReadExcelFile(this.file);
+            List<NameFromDataTable> namesForAnalyze = ReadNamesFromData(dataTableForAnalyze);
+
             foreach (string f in this.fileList)
             {
-
+                LogWriter.Write("Поиск дубликатов в файле: " + f);
+                DataTable dtBase = ReadExcelFile(f);
+                List<NameFromDataTable> namesBase = ReadNamesFromData(dtBase);
+                List<NameFromDataTable> dublicates = GetDuplicateList(namesForAnalyze, namesBase);
+                this.allDublicates.AddRange(dublicates);
             }
+
+            LogWriter.Write("Всего найдено: " + this.allDublicates.Count);
+
+            int before = this.dataTableForAnalyze.Rows.Count;
+            DeleteDublicates();
+            int after = this.dataTableForAnalyze.Rows.Count;
+            LogWriter.Write("Удалено: " + (before - after));
+            LogWriter.Write("Уникальных записей:" + this.dataTableForAnalyze.Rows.Count);
+
+            this.dataTableForAnalyze.WriteXml("my.xlsx");
+        }
+
+        private void DeleteDublicates()
+        {
+            foreach (NameFromDataTable dubl in this.allDublicates)
+            {
+                this.dataTableForAnalyze.Rows[dubl.ID].Delete();
+            }
+            this.dataTableForAnalyze.AcceptChanges();
         }
 
         /// <summary>
@@ -56,14 +83,14 @@ namespace ExcelComparer
                 {
                     if(name1.Name == name2.Name)
                     {
-                        dublicate.Add(name1);
+                        result.Add(name1);
                         string message = String.Format("Найден дуликат: {0} : {1} = {2} : {3}", name1.ID, name2.Name, name2.ID, name2.Name);
                         LogWriter.Write(message);
                     }
                 }
             }
-            LogWriter.Write("Всего найдено дубликатов: " + dublicate.Count);
-            return dublicate;
+            LogWriter.Write("Всего найдено дубликатов в файле: " + result.Count);
+            return result;
         }
 
         /// <summary>
