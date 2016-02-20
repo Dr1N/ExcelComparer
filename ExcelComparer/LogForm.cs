@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace ExcelComparer
 {
-    public partial class ProgressForm : Form
+    public partial class LogForm : Form
     {
-        public ProgressForm()
+        public LogForm()
         {
             InitializeComponent();
         }

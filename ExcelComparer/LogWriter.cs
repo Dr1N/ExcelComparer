@@ -24,7 +24,7 @@ namespace ExcelComparer
 
         static LogWriter()
         {
-            Mode = LOG_MODE.NONE;
+            Mode = LOG_MODE.DEBUG;
         }
         
         public static void Write(string message)

@@ -40,6 +40,7 @@
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.btnTest = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -153,6 +154,7 @@
             // 
             this.flowLayoutPanel3.Controls.Add(this.btnStart);
             this.flowLayoutPanel3.Controls.Add(this.btnCancel);
+            this.flowLayoutPanel3.Controls.Add(this.btnTest);
             this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel3.Location = new System.Drawing.Point(3, 75);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
@@ -178,6 +180,16 @@
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // btnTest
+            // 
+            this.btnTest.Location = new System.Drawing.Point(165, 3);
+            this.btnTest.Name = "btnTest";
+            this.btnTest.Size = new System.Drawing.Size(75, 23);
+            this.btnTest.TabIndex = 2;
+            this.btnTest.Text = "Test";
+            this.btnTest.UseVisualStyleBackColor = true;
+            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
             // 
             // MainForm
             // 
@@ -210,6 +222,7 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSelectDirectory;
         private System.Windows.Forms.Button btnSelectFile;
+        private System.Windows.Forms.Button btnTest;
     }
 }
 
