@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,9 +20,11 @@ namespace ExcelComparer
         private readonly string fileFilter = "Excel(XLSX)|*.xlsx|Excel(XLSB)|*.xlsb|Excel(XLSM)|*.xlsm|Excel(XLS)|*.xls|Все файлы|*.*";
         private readonly List<string> fileExtentions = new List<string>() { ".xlsx", ".xlsb", ".xlsm", ".xls" };
 
+        private string file;
         private string directory;
         private string[] files;
-        private string file;
+
+        private Thread workThread = null;
 
         #endregion
 
@@ -40,31 +43,56 @@ namespace ExcelComparer
 
         private void btnStart_Click(object sender, EventArgs e)
         {
+            if(LogForm.Instance.Visible == false)
+            { 
+                LogForm.Instance.Show();
+            }
             try
             {
-                if (!IsValidPaths())
+                GetFileList();
+                if (!IsValidSettings())
                 {
-                    MessageBox.Show("Есть ошибки в настройках программы. Смотри логи работы программы", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    string message = "Неверные настройки программы. Смотри логи работы программы";
+                    LogWriter.Write(message);
+                    MessageBox.Show(message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-                if (GetFileList() <= 0)
-                {
-                    MessageBox.Show("Не удалось получить список файлов для анализа. Смотри логи работы программы", Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
+
+                btnStart.Enabled = false;
+                btnCancel.Enabled = false;
+                btnSelectDirectory.Enabled = false;
+                btnSelectFile.Enabled = false;
+                linkLabel1.Enabled = false;
+                Text = "Excel Comparer [Идёт обработка...]";
 
                 ExcelDbComparer comparer = new ExcelDbComparer(this.file, this.files);
-                comparer.RunWork();
+                this.workThread = new Thread(comparer.RunWork) { IsBackground = true };
+                this.workThread.Start(this);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("В процессе обработки возникли ошибки. Смотри логи работы!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 LogWriter.Write("Обработка прекращена! Причина: " + ex.Message);
+                MessageBox.Show("В процессе обработки возникли ошибки. Смотри логи работы!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            try
+            {
+                if (this.workThread != null)
+                {
+                    this.workThread.Abort();
+                    this.workThread = null;
+                }
+            }
+            catch (Exception) { }
+            base.OnClosing(e);
         }
 
         private void btnOpenFile_Click(object sender, EventArgs e)
@@ -142,7 +170,7 @@ namespace ExcelComparer
             throw new ComparerException("Пользователь не выбрал каталог");
         }
 
-        private bool IsValidPaths()
+        private bool IsValidSettings()
         {
             bool result = true;
             string filePath = lblDataBaseFile.Text;
@@ -167,35 +195,32 @@ namespace ExcelComparer
                 result = false;
             }
 
+            if (this.files.Length == 0)
+            {
+                LogWriter.Write("В директори нет файлов для анализа");
+                result = false;
+            }
+
             return result;
         }
 
-        private int GetFileList()
+        private void GetFileList()
         {
-            try
-            {
-                string[] files = Directory.GetFiles(this.directory, "*.*", SearchOption.AllDirectories);
-                this.files = (from f 
-                              in files
-                              where this.fileExtentions.Contains(Path.GetExtension(f)) && !Path.GetFileName(f).StartsWith("~$")
-                              select f).ToArray();
+            string[] files = Directory.GetFiles(this.directory, "*.*", SearchOption.AllDirectories);
+            this.files = (from f 
+                          in files
+                          where this.fileExtentions.Contains(Path.GetExtension(f)) && !Path.GetFileName(f).StartsWith("~$")
+                          select f).ToArray();
+        }
 
-                if (this.files.Length == 0)
-                {
-                    LogWriter.Write("В директории нет файлов для анализа");
-                }
-                LogWriter.Write("Найдено " + this.files.Length + " для анализа:");
-                foreach (string f in files)
-                {
-                    LogWriter.Write(f);
-                }
-                return files.Length;
-            }
-            catch (Exception e)
-            {
-                LogWriter.Write("Не удалось получить список файлов" + Environment.NewLine + e.Message);
-                return -1;
-            }
+        private void EndWork()
+        {
+            btnStart.Enabled = true;
+            btnCancel.Enabled = true;
+            btnSelectDirectory.Enabled = true;
+            btnSelectFile.Enabled = true;
+            linkLabel1.Enabled = true;
+            Text = "Excel Comparer [Обработка завершена]";
         }
 
         #endregion

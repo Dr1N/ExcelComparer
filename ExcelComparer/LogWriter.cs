@@ -20,11 +20,14 @@ namespace ExcelComparer
     static class LogWriter
     {
         private static string logFile = "log.txt";
+        private static LogForm logForm;
+
         public static LOG_MODE Mode { get; set; }
 
         static LogWriter()
         {
-            Mode = LOG_MODE.DEBUG;
+            Mode = LOG_MODE.DEBUG | LOG_MODE.WINDOW;
+            logForm = LogForm.Instance;
         }
         
         public static void Write(string message)
@@ -58,7 +61,7 @@ namespace ExcelComparer
             }
             if (isWindow)
             {
-                //to-do
+                logForm.Write(dateTime + "\t" + message);
             }  
         }
     }

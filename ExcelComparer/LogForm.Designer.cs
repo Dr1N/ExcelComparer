@@ -36,21 +36,21 @@
             this.tbLog.BackColor = System.Drawing.SystemColors.MenuText;
             this.tbLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tbLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbLog.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tbLog.Font = new System.Drawing.Font("Courier New", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tbLog.ForeColor = System.Drawing.Color.Lime;
             this.tbLog.Location = new System.Drawing.Point(0, 0);
             this.tbLog.Multiline = true;
             this.tbLog.Name = "tbLog";
-            this.tbLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.tbLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.tbLog.Size = new System.Drawing.Size(631, 489);
             this.tbLog.TabIndex = 0;
-            this.tbLog.Text = "Привет\r\nТут будет текст\r\nДля тестов";
             // 
             // LogForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(631, 489);
             this.Controls.Add(this.tbLog);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.MaximizeBox = false;
             this.Name = "LogForm";

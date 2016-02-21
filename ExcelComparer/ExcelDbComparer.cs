@@ -8,6 +8,7 @@ using System.Data.OleDb;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using System.IO;
+using System.Windows.Forms;
 
 namespace ExcelComparer
 {
@@ -33,15 +34,26 @@ namespace ExcelComparer
             this.fileList = list;
         }
 
-        public void RunWork()
+        public void RunWork(object frm)
         {
+            MainForm form = frm as MainForm;
+            if(form == null)
+            {
+                LogWriter.Write("Невозможно начать обработку. Нет ссылки на главную форму");
+                return;
+            }
             try
-            { 
-                List<NameFromDataTable> allDublicates = new List<NameFromDataTable>();
+            {
                 LogWriter.Write("Анализируемый файл: " + this.file);
+                LogWriter.Write("Файлы для сравнения:");
+                foreach (string f in this.fileList)
+                {
+                    LogWriter.Write(f);
+                }
+                
                 DataTable dtForAnalyze = ReadExcelFile(this.file);
                 List<NameFromDataTable> namesForAnalyze = ReadNamesFromData(dtForAnalyze);
-
+                List<NameFromDataTable> allDublicates = new List<NameFromDataTable>();
                 foreach (string f in this.fileList)
                 {
                     LogWriter.Write("Поиск дубликатов в файле: " + f);
@@ -54,12 +66,16 @@ namespace ExcelComparer
                 LogWriter.Write("Всего найдено дубликатов: " + allDublicates.Count);
 
                 DeleteDublicates(dtForAnalyze, allDublicates);
+
+                LogWriter.Write("Дубликаты удалены");
+
                 SaveDataTableInExcelFormat(dtForAnalyze);
+
+                LogWriter.Write("Результат сохранён: " + Path.GetFullPath(Path.GetFileNameWithoutExtension(this.file) + "_filtered" + Path.GetExtension(this.file)));
             }
             catch(Exception e)
             {
                 LogWriter.Write("Error! Не удалось обработать файл: " + e.Message);
-                throw;
             }
         }
 
@@ -86,6 +102,10 @@ namespace ExcelComparer
             XLWorkbook woorkBook = new XLWorkbook();
             woorkBook.Worksheets.Add(dt, this.sheetName);
             string name = Path.GetFileNameWithoutExtension(this.file) + "_filtered" + Path.GetExtension(this.file);
+            if(File.Exists(name))
+            {
+                File.Delete(name);
+            }
             woorkBook.SaveAs(name);
         }
 
