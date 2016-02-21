@@ -32,8 +32,8 @@ namespace ExcelComparer
         {
             InitializeComponent();
 
-            this.directory = @"d:\My Coding\KWORK\ExcelComparer\Files\Dir\";
-            this.file = @"d:\My Coding\KWORK\ExcelComparer\Files\file1.xlsx";
+            this.directory = @"d:\My Coding\KWORK\Files\Dir\";
+            this.file = @"d:\My Coding\KWORK\Files\file1.xlsx";
 
             this.lblDataBaseFile.Text = this.file;
             this.lblDirectoryPath.Text = this.directory;
