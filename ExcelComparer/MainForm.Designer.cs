@@ -40,7 +40,7 @@
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.btnTest = new System.Windows.Forms.Button();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -154,7 +154,7 @@
             // 
             this.flowLayoutPanel3.Controls.Add(this.btnStart);
             this.flowLayoutPanel3.Controls.Add(this.btnCancel);
-            this.flowLayoutPanel3.Controls.Add(this.btnTest);
+            this.flowLayoutPanel3.Controls.Add(this.linkLabel1);
             this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel3.Location = new System.Drawing.Point(3, 75);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
@@ -181,15 +181,16 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // btnTest
+            // linkLabel1
             // 
-            this.btnTest.Location = new System.Drawing.Point(165, 3);
-            this.btnTest.Name = "btnTest";
-            this.btnTest.Size = new System.Drawing.Size(75, 23);
-            this.btnTest.TabIndex = 2;
-            this.btnTest.Text = "Test";
-            this.btnTest.UseVisualStyleBackColor = true;
-            this.btnTest.Click += new System.EventHandler(this.btnTest_Click);
+            this.linkLabel1.Location = new System.Drawing.Point(165, 0);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(277, 32);
+            this.linkLabel1.TabIndex = 2;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "About";
+            this.linkLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // MainForm
             // 
@@ -199,7 +200,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Text = "Comparer";
+            this.Text = "Excel Comparer";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel2.ResumeLayout(false);
@@ -222,7 +223,7 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnSelectDirectory;
         private System.Windows.Forms.Button btnSelectFile;
-        private System.Windows.Forms.Button btnTest;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }
 

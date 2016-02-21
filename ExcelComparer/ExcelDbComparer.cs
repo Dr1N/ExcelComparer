@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Data.OleDb;
 using System.Text.RegularExpressions;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace ExcelComparer
 {
@@ -17,9 +19,7 @@ namespace ExcelComparer
         private string[] fileList;
         private int FOIColumnIndex = 0;
         private string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;extended properties =\"excel 8.0;hdr=no;IMEX=1\";data source={0}";
-        private string sheenName = "Лист1$";
-        private List<NameFromDataTable> allDublicates = new List<NameFromDataTable>();
-        private DataTable dataTableForAnalyze;
+        private string sheetName = "Лист1$";
 
         #endregion
 
@@ -35,37 +35,58 @@ namespace ExcelComparer
 
         public void RunWork()
         {
-            LogWriter.Write("Анализируемый файл: " + this.file);
-            dataTableForAnalyze = ReadExcelFile(this.file);
-            List<NameFromDataTable> namesForAnalyze = ReadNamesFromData(dataTableForAnalyze);
+            try
+            { 
+                List<NameFromDataTable> allDublicates = new List<NameFromDataTable>();
+                LogWriter.Write("Анализируемый файл: " + this.file);
+                DataTable dtForAnalyze = ReadExcelFile(this.file);
+                List<NameFromDataTable> namesForAnalyze = ReadNamesFromData(dtForAnalyze);
 
-            foreach (string f in this.fileList)
-            {
-                LogWriter.Write("Поиск дубликатов в файле: " + f);
-                DataTable dtBase = ReadExcelFile(f);
-                List<NameFromDataTable> namesBase = ReadNamesFromData(dtBase);
-                List<NameFromDataTable> dublicates = GetDuplicateList(namesForAnalyze, namesBase);
-                this.allDublicates.AddRange(dublicates);
+                foreach (string f in this.fileList)
+                {
+                    LogWriter.Write("Поиск дубликатов в файле: " + f);
+                    DataTable dtBase = ReadExcelFile(f);
+                    List<NameFromDataTable> namesBase = ReadNamesFromData(dtBase);
+                    List<NameFromDataTable> dublicates = GetDuplicateList(namesForAnalyze, namesBase);
+                    allDublicates.AddRange(dublicates);
+                }
+
+                LogWriter.Write("Всего найдено дубликатов: " + allDublicates.Count);
+
+                DeleteDublicates(dtForAnalyze, allDublicates);
+                SaveDataTableInExcelFormat(dtForAnalyze);
             }
-
-            LogWriter.Write("Всего найдено: " + this.allDublicates.Count);
-
-            int before = this.dataTableForAnalyze.Rows.Count;
-            DeleteDublicates();
-            int after = this.dataTableForAnalyze.Rows.Count;
-            LogWriter.Write("Удалено: " + (before - after));
-            LogWriter.Write("Уникальных записей:" + this.dataTableForAnalyze.Rows.Count);
-
-            this.dataTableForAnalyze.WriteXml("my.xlsx");
+            catch(Exception e)
+            {
+                LogWriter.Write("Error! Не удалось обработать файл: " + e.Message);
+                throw;
+            }
         }
 
-        private void DeleteDublicates()
+        /// <summary>
+        /// Удалить дубликаты из DataTable
+        /// </summary>
+        /// <param name="dt">Обрабатываемый DataTable</param>
+        /// <param name="dublicates">Список добликатов</param>
+        private void DeleteDublicates(DataTable dt, List<NameFromDataTable> dublicates)
         {
-            foreach (NameFromDataTable dubl in this.allDublicates)
+            foreach (NameFromDataTable dubl in dublicates)
             {
-                this.dataTableForAnalyze.Rows[dubl.ID].Delete();
+                dt.Rows[dubl.ID].Delete();
             }
-            this.dataTableForAnalyze.AcceptChanges();
+            dt.AcceptChanges();
+        }
+
+        /// <summary>
+        /// Сохранить DataTable в формате Excel
+        /// </summary>
+        /// <param name="dt">Сохраняемый DataTable</param>
+        private void SaveDataTableInExcelFormat(DataTable dt)
+        {
+            XLWorkbook woorkBook = new XLWorkbook();
+            woorkBook.Worksheets.Add(dt, this.sheetName);
+            string name = Path.GetFileNameWithoutExtension(this.file) + "_filtered" + Path.GetExtension(this.file);
+            woorkBook.SaveAs(name);
         }
 
         /// <summary>
@@ -74,7 +95,7 @@ namespace ExcelComparer
         /// <param name="list1">Анализируемый список</param>
         /// <param name="list2">Список для сравнения</param>
         /// <returns>Список дубликатов из первого списка, которые есть во втором</returns>
-        public List<NameFromDataTable> GetDuplicateList(List<NameFromDataTable> list1, List<NameFromDataTable> list2)
+        private List<NameFromDataTable> GetDuplicateList(List<NameFromDataTable> list1, List<NameFromDataTable> list2)
         {
             List<NameFromDataTable> result = new List<NameFromDataTable>();
             foreach (NameFromDataTable name1 in list1)
@@ -98,29 +119,21 @@ namespace ExcelComparer
         /// </summary>
         /// <param name="file">Путь к фалу</param>
         /// <returns>DataTable с содержимым файла</returns>
-        public DataTable ReadExcelFile(string file)
+        private DataTable ReadExcelFile(string file)
         {
-            try
-            {
-                /*
-                var connectionString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0; data source={0}; Extended Properties=Excel 8.0;", this.file);
-                */
-                string connectionString = String.Format(this.connectionString, file);
-                string selectQuery = String.Format("SELECT * FROM [{0}]", this.sheenName);
-                OleDbDataAdapter adapter = new OleDbDataAdapter(selectQuery, connectionString);
-                DataSet ds = new DataSet();
-                adapter.Fill(ds, "Base");
-                DataTable data = ds.Tables["Base"];
+            /*
+            var connectionString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0; data source={0}; Extended Properties=Excel 8.0;", this.file);
+            */
+            string connectionString = String.Format(this.connectionString, file);
+            string selectQuery = String.Format("SELECT * FROM [{0}]", this.sheetName);
+            OleDbDataAdapter adapter = new OleDbDataAdapter(selectQuery, connectionString);
+            DataSet ds = new DataSet();
+            adapter.Fill(ds, "Base");
+            DataTable data = ds.Tables["Base"];
 
-                LogWriter.Write(String.Format("Прочитан файл {0}. Столбцов: {1}. Строк: {2}", file, data.Columns.Count, data.Rows.Count));
+            LogWriter.Write(String.Format("Прочитан файл {0}. Столбцов: {1}. Строк: {2}", file, data.Columns.Count, data.Rows.Count));
 
-                return data;
-            }
-            catch (Exception e)
-            {
-                LogWriter.Write("Не удалось прочитать файл: " + e.Message);
-                throw new ComparerException("Не удалось прочитать файл: " + file);
-            }
+            return data;
         }
 
         /// <summary>
@@ -129,17 +142,17 @@ namespace ExcelComparer
         /// </summary>
         /// <param name="data">DataTable с данными</param>
         /// <returns>Список NameFromDataTable (Номер записи - ФИО)</returns>
-        public List<NameFromDataTable> ReadNamesFromData(DataTable data)
+        private List<NameFromDataTable> ReadNamesFromData(DataTable data)
         {
             List<NameFromDataTable> result = new List<NameFromDataTable>();
             int id = 0;
             foreach (DataRow row in data.Rows)
             {
                 string rawName = row[this.FOIColumnIndex].ToString();
-                string fio = ProcessName(rawName.Trim().ToLower());
-                if (fio != null)
+                string processedName = ProcessName(rawName.Trim().ToLower());
+                if (processedName != null)
                 {
-                    result.Add(new NameFromDataTable() { ID = id, Name = fio });
+                    result.Add(new NameFromDataTable() { ID = id, Name = processedName });
                 }
                 else
                 {

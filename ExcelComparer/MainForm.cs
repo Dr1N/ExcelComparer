@@ -57,7 +57,8 @@ namespace ExcelComparer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("В процессе обработки возникли ошибки. Смотри логи работы!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogWriter.Write("Обработка прекращена! Причина: " + ex.Message);
             }
         }
 
@@ -98,6 +99,11 @@ namespace ExcelComparer
             {
                 MessageBox.Show(ex.Message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            new AboutBox().ShowDialog();
         }
 
         #endregion
@@ -193,12 +199,5 @@ namespace ExcelComparer
         }
 
         #endregion
-
-        private void btnTest_Click(object sender, EventArgs e)
-        {
-            ExcelDbComparer c = new ExcelDbComparer("test", new string[] { "test", "test", "test" });
-            DataTable dt = c.ReadExcelFile(@"D:\My Coding\KWORK\ExcelComparer\Files\file1.xlsx");
-            List<NameFromDataTable> names = c.ReadNamesFromData(dt);
-        }
     }
 }
