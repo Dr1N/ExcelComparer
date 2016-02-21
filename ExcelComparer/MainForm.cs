@@ -80,7 +80,7 @@ namespace ExcelComparer
                     this.workThread = null;
                 }
             }
-            catch (Exception) { }
+            catch (Exception) { e.Cancel = true; }
             base.OnClosing(e);
         }
 
