@@ -19,6 +19,8 @@ namespace ExcelComparer
         private string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;extended properties =\"excel 8.0;hdr=no;IMEX=1\";data source={0}";
         private string sheetName = "Лист1";
 
+        private string currentFile = "";
+
         #endregion
 
         public ExcelDbComparer(string file, string[] list)
@@ -55,6 +57,7 @@ namespace ExcelComparer
                 List<NameFromDataTable> allDublicates = new List<NameFromDataTable>();
                 foreach (string f in this.fileList)
                 {
+                    this.currentFile = f;
                     LogWriter.Write("Поиск дубликатов в файле: " + f);
                     DataTable dtBase = ReadExcelFile(f);
                     List<NameFromDataTable> namesBase = ReadNamesFromData(dtBase);
@@ -133,7 +136,7 @@ namespace ExcelComparer
                     }
                 }
             }
-            LogWriter.Write("Всего найдено дубликатов в файле: " + result.Count);
+            LogWriter.Write(String.Format("Всего найдено дубликатов в файле [{0}]: {1} ", this.currentFile, result.Count));
             return result;
         }
 
@@ -144,7 +147,7 @@ namespace ExcelComparer
         /// <returns>DataTable с содержимым файла</returns>
         private DataTable ReadExcelFile(string file)
         {
-            LogWriter.Write(String.Format("Читаем файл:{0}", file));
+            LogWriter.Write(String.Format("Читаем файл: {0}", file));
             /*
             var connectionString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0; data source={0}; Extended Properties=Excel 8.0;", this.file);
             */
@@ -170,6 +173,9 @@ namespace ExcelComparer
         /// <returns>Список NameFromDataTable (Номер записи - ФИО)</returns>
         private List<NameFromDataTable> ReadNamesFromData(DataTable data)
         {
+            LogWriter.Write("=======================================");
+            LogWriter.Write("Читаем ФИО из файла: " + this.currentFile);
+            LogWriter.Write("=======================================");
             List<NameFromDataTable> result = new List<NameFromDataTable>();
             int id = 0;
             foreach (DataRow row in data.Rows)

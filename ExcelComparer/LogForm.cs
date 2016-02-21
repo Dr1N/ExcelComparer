@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ExcelComparer
@@ -31,12 +25,24 @@ namespace ExcelComparer
             InitializeComponent();
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Hide();
+            e.Cancel = true;
+            base.OnClosing(e);
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            tbLog.Text = "";
+        }
+
         public void Write(string message)
         {
             if (this.tbLog.InvokeRequired)
             {
                 Action<string> action = new Action<string>(Write);
-                this.tbLog.Invoke(action, new object[] { message });
+                this.tbLog.BeginInvoke(action, new object[] { message });
             }
             else
             {
