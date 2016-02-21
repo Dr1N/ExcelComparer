@@ -58,13 +58,6 @@ namespace ExcelComparer
                     return;
                 }
 
-                btnStart.Enabled = false;
-                btnCancel.Enabled = false;
-                btnSelectDirectory.Enabled = false;
-                btnSelectFile.Enabled = false;
-                linkLabel1.Enabled = false;
-                Text = "Excel Comparer [Идёт обработка...]";
-
                 ExcelDbComparer comparer = new ExcelDbComparer(this.file, this.files);
                 this.workThread = new Thread(comparer.RunWork) { IsBackground = true };
                 this.workThread.Start(this);
@@ -137,6 +130,42 @@ namespace ExcelComparer
         #endregion
 
         #region METHODS
+
+        public void StartWork()
+        {
+            if (this.InvokeRequired)
+            {
+                Action action = new Action(StartWork);
+                this.Invoke(action, new object[0]);
+            }
+            else
+            {
+                btnStart.Enabled = false;
+                btnCancel.Enabled = false;
+                btnSelectDirectory.Enabled = false;
+                btnSelectFile.Enabled = false;
+                linkLabel1.Enabled = false;
+                Text = "Excel Comparer [Идёт обработка...]";
+            }
+        }
+
+        public void EndWork()
+        {
+            if (this.InvokeRequired)
+            {
+                Action action = new Action(EndWork);
+                this.Invoke(action, new object[0]);
+            }
+            else
+            {
+                btnStart.Enabled = true;
+                btnCancel.Enabled = true;
+                btnSelectDirectory.Enabled = true;
+                btnSelectFile.Enabled = true;
+                linkLabel1.Enabled = true;
+                Text = "Excel Comparer [Обработка завершена]";
+            }
+        }
 
         private string GetDataBaseFileName()
         {
@@ -211,16 +240,6 @@ namespace ExcelComparer
                           in files
                           where this.fileExtentions.Contains(Path.GetExtension(f)) && !Path.GetFileName(f).StartsWith("~$")
                           select f).ToArray();
-        }
-
-        private void EndWork()
-        {
-            btnStart.Enabled = true;
-            btnCancel.Enabled = true;
-            btnSelectDirectory.Enabled = true;
-            btnSelectFile.Enabled = true;
-            linkLabel1.Enabled = true;
-            Text = "Excel Comparer [Обработка завершена]";
         }
 
         #endregion

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Data.OleDb;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
 using System.IO;
-using System.Windows.Forms;
 
 namespace ExcelComparer
 {
@@ -20,7 +17,7 @@ namespace ExcelComparer
         private string[] fileList;
         private int FOIColumnIndex = 0;
         private string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;extended properties =\"excel 8.0;hdr=no;IMEX=1\";data source={0}";
-        private string sheetName = "Лист1$";
+        private string sheetName = "Лист1";
 
         #endregion
 
@@ -44,6 +41,8 @@ namespace ExcelComparer
             }
             try
             {
+                form.StartWork();
+
                 LogWriter.Write("Анализируемый файл: " + this.file);
                 LogWriter.Write("Файлы для сравнения:");
                 foreach (string f in this.fileList)
@@ -76,6 +75,10 @@ namespace ExcelComparer
             catch(Exception e)
             {
                 LogWriter.Write("Error! Не удалось обработать файл: " + e.Message);
+            }
+            finally
+            {
+                form.EndWork();
             }
         }
 
@@ -141,19 +144,22 @@ namespace ExcelComparer
         /// <returns>DataTable с содержимым файла</returns>
         private DataTable ReadExcelFile(string file)
         {
+            LogWriter.Write(String.Format("Читаем файл:{0}", file));
             /*
             var connectionString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0; data source={0}; Extended Properties=Excel 8.0;", this.file);
             */
             string connectionString = String.Format(this.connectionString, file);
-            string selectQuery = String.Format("SELECT * FROM [{0}]", this.sheetName);
-            OleDbDataAdapter adapter = new OleDbDataAdapter(selectQuery, connectionString);
-            DataSet ds = new DataSet();
-            adapter.Fill(ds, "Base");
-            DataTable data = ds.Tables["Base"];
+            string selectQuery = String.Format("SELECT * FROM [{0}$]", this.sheetName);
+            using (OleDbDataAdapter adapter = new OleDbDataAdapter(selectQuery, connectionString))
+            { 
+                DataSet ds = new DataSet();
+                adapter.Fill(ds, "Base");
+                DataTable data = ds.Tables["Base"];
 
-            LogWriter.Write(String.Format("Прочитан файл {0}. Столбцов: {1}. Строк: {2}", file, data.Columns.Count, data.Rows.Count));
+                LogWriter.Write(String.Format("Прочитан файл {0}. Столбцов: {1}. Строк: {2}", file, data.Columns.Count, data.Rows.Count));
 
-            return data;
+                return data;
+            }
         }
 
         /// <summary>

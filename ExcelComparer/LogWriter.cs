@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExcelComparer
 {
@@ -26,7 +22,7 @@ namespace ExcelComparer
 
         static LogWriter()
         {
-            Mode = LOG_MODE.DEBUG | LOG_MODE.WINDOW;
+            Mode = LOG_MODE.DEBUG | LOG_MODE.WINDOW | LOG_MODE.FILE;
             logForm = LogForm.Instance;
         }
         
@@ -52,7 +48,7 @@ namespace ExcelComparer
             {
                 try
                 {
-                    File.AppendAllText(logFile, dateTime + "\t" + message);
+                    File.AppendAllText(logFile, dateTime + "\t" + message + Environment.NewLine);
                 }
                 catch(Exception e)
                 {
