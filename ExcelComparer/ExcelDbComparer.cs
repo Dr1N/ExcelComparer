@@ -13,12 +13,13 @@ namespace ExcelComparer
     {
         #region FIELDS
 
+        public FIELD_TYPE FieldType = FIELD_TYPE.NONE;
+
         private string file;
         private string[] fileList;
         private int FOIColumnIndex = 0;
         private string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;extended properties =\"excel 8.0;hdr=no;IMEX=1\";data source={0}";
         private string sheetName = "Лист1";
-
         private string currentFile = "";
 
         #endregion
@@ -41,6 +42,11 @@ namespace ExcelComparer
                 LogWriter.Write("Невозможно начать обработку. Нет ссылки на главную форму");
                 return;
             }
+            if (FieldType == FIELD_TYPE.NONE)
+            {
+                LogWriter.Write("Не указан тип поля");
+                return;
+            }
             try
             {
                 form.StartWork();
@@ -53,15 +59,15 @@ namespace ExcelComparer
                 }
                 
                 DataTable dtForAnalyze = ReadExcelFile(this.file);
-                List<NameFromDataTable> namesForAnalyze = ReadNamesFromData(dtForAnalyze);
-                List<NameFromDataTable> allDublicates = new List<NameFromDataTable>();
+                List<FieldData> fieldsForAnalyze = ReadFieldFromData(dtForAnalyze);
+                List<FieldData> allDublicates = new List<FieldData>();
                 foreach (string f in this.fileList)
                 {
                     this.currentFile = f;
                     LogWriter.Write("Поиск дубликатов в файле: " + f);
                     DataTable dtBase = ReadExcelFile(f);
-                    List<NameFromDataTable> namesBase = ReadNamesFromData(dtBase);
-                    List<NameFromDataTable> dublicates = GetDuplicateList(namesForAnalyze, namesBase);
+                    List<FieldData> fieldsForCompare = ReadFieldFromData(dtBase);
+                    List<FieldData> dublicates = GetDuplicateList(fieldsForAnalyze, fieldsForCompare);
                     allDublicates.AddRange(dublicates);
                 }
 
@@ -90,9 +96,9 @@ namespace ExcelComparer
         /// </summary>
         /// <param name="dt">Обрабатываемый DataTable</param>
         /// <param name="dublicates">Список добликатов</param>
-        private void DeleteDublicates(DataTable dt, List<NameFromDataTable> dublicates)
+        private void DeleteDublicates(DataTable dt, List<FieldData> dublicates)
         {
-            foreach (NameFromDataTable dubl in dublicates)
+            foreach (FieldData dubl in dublicates)
             {
                 dt.Rows[dubl.ID].Delete();
             }
@@ -118,20 +124,20 @@ namespace ExcelComparer
         /// <summary>
         /// Возвращает список дубликатов
         /// </summary>
-        /// <param name="list1">Анализируемый список</param>
-        /// <param name="list2">Список для сравнения</param>
+        /// <param name="analyzed">Анализируемый список</param>
+        /// <param name="forcompare">Список для сравнения</param>
         /// <returns>Список дубликатов из первого списка, которые есть во втором</returns>
-        private List<NameFromDataTable> GetDuplicateList(List<NameFromDataTable> list1, List<NameFromDataTable> list2)
+        private List<FieldData> GetDuplicateList(List<FieldData> analyzed, List<FieldData> forcompare)
         {
-            List<NameFromDataTable> result = new List<NameFromDataTable>();
-            foreach (NameFromDataTable name1 in list1)
+            List<FieldData> result = new List<FieldData>();
+            foreach (FieldData analizedField in analyzed)
             {
-                foreach (NameFromDataTable name2 in list2)
+                foreach (FieldData fieldForCompare in forcompare)
                 {
-                    if(name1.Name == name2.Name)
+                    if(analizedField.Equals(fieldForCompare))
                     {
-                        result.Add(name1);
-                        string message = String.Format("Найден дуликат: {0} : {1} = {2} : {3}", name1.ID, name2.Name, name2.ID, name2.Name);
+                        result.Add(analizedField);
+                        string message = String.Format("Найден дуликат: {0} : {1} = {2} : {3}", analizedField.ID, fieldForCompare.FieldValue, fieldForCompare.ID, fieldForCompare.FieldValue);
                         LogWriter.Write(message);
                     }
                 }
@@ -148,9 +154,6 @@ namespace ExcelComparer
         private DataTable ReadExcelFile(string file)
         {
             LogWriter.Write(String.Format("Читаем файл: {0}", file));
-            /*
-            var connectionString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0; data source={0}; Extended Properties=Excel 8.0;", this.file);
-            */
             string connectionString = String.Format(this.connectionString, file);
             string selectQuery = String.Format("SELECT * FROM [{0}$]", this.sheetName);
             using (OleDbDataAdapter adapter = new OleDbDataAdapter(selectQuery, connectionString))
@@ -171,50 +174,85 @@ namespace ExcelComparer
         /// </summary>
         /// <param name="data">DataTable с данными</param>
         /// <returns>Список NameFromDataTable (Номер записи - ФИО)</returns>
-        private List<NameFromDataTable> ReadNamesFromData(DataTable data)
+        private List<FieldData> ReadFieldFromData(DataTable data)
         {
             LogWriter.Write("=======================================");
-            LogWriter.Write("Читаем ФИО из файла: " + this.currentFile);
+            LogWriter.Write("Читаем Поле из файла: " + this.currentFile);
             LogWriter.Write("=======================================");
-            List<NameFromDataTable> result = new List<NameFromDataTable>();
+            List<FieldData> result = new List<FieldData>();
             int id = 0;
             foreach (DataRow row in data.Rows)
             {
-                string rawName = row[this.FOIColumnIndex].ToString();
-                string processedName = ProcessName(rawName.Trim().ToLower());
-                if (processedName != null)
+                string rawField = row[this.FOIColumnIndex].ToString().ToLower().Trim();
+                FieldData fd = null;
+                switch (FieldType)
                 {
-                    result.Add(new NameFromDataTable() { ID = id, Name = processedName });
+                    case FIELD_TYPE.NAME:
+                        fd = new NameField(id, rawField);
+                        break;
+                    case FIELD_TYPE.PHONE:
+                        fd = new PhoneField(id, rawField);
+                        break;
+                    default:
+                        LogWriter.Write("Не известный тип поля: " + FieldType);
+                        break;
+                }
+                if (fd.FieldValue != null)
+                {
+                    result.Add(fd);
                 }
                 else
                 {
-                    LogWriter.Write(String.Format("Запись: {0}. ФИО: {1} - Не валидна!", id, 
+                    LogWriter.Write(String.Format("Запись: {0}. Поле: {1} - Не валидна!", id, 
                         !String.IsNullOrEmpty(row[this.FOIColumnIndex].ToString()) ? row[this.FOIColumnIndex].ToString() : "<Нет значения>" ));
                 }
                 id++;
             }
 
-            LogWriter.Write("Прочитано валидных имён из файла: " + result.Count);
+            LogWriter.Write("Прочитано валидных полей из файла: " + result.Count);
 
             return result;
         }
+    }
 
-        /// <summary>
-        /// Обработка ФИО. Фильтрация пустых, невалидный записей, удаление дубликатов в ФИО
-        /// </summary>
-        /// <param name="name">ФИО</param>
-        /// <returns>Обработанное ФИО</returns>
-        private string ProcessName(string name)
+    abstract class FieldData : IEquatable<FieldData>
+    {
+        public int ID { get; set; }
+        public string FieldValue { get; set; }
+
+        public FieldData(int id, string value)
+        {
+            ID = id;
+            FieldValue = ProcessField(value);
+        }
+        public abstract string ProcessField(string field);
+        public abstract bool Equals(FieldData other);
+    }
+
+    class NameField : FieldData
+    {
+        public NameField(int id, string value) : base(id, value) { }
+
+        public override bool Equals(FieldData other)
+        {
+            if (other is NameField == false)
+            {
+                return false;
+            }
+            return FieldValue == other.FieldValue;
+        }
+              
+        public override string ProcessField(string field)
         {
             string result = null;
-            if(!String.IsNullOrEmpty(name))
-            { 
-                name = Regex.Replace(name, @"\W+", " ");                      //удаление мусора (не цифрово-алфовитные символы)
-                name = Regex.Replace(name, @"\s+", " ");                      //замена двойных пробелов
-                string[] words = name.Split(' ');                             //разбиваем на слова
-                if(words.Length >= 2)
-                { 
-                    if (words.Length > 3)                                     //удалим дубликаты в фио (опасно to-do)
+            if (!String.IsNullOrEmpty(field))
+            {
+                field = Regex.Replace(field, @"\W+", " ");          //удаление мусора (не цифрово-алфовитные символы)
+                field = Regex.Replace(field, @"\s+", " ");          //замена двойных пробелов
+                string[] words = field.Split(' ');                  //разбиваем на слова
+                if (words.Length >= 2)
+                {
+                    if (words.Length > 3)                           //удалим дубликаты в фио (опасно to-do)
                     {
                         words = words.Distinct<string>().ToArray();
                     }
@@ -225,9 +263,38 @@ namespace ExcelComparer
         }
     }
 
-    struct NameFromDataTable
+    class PhoneField : FieldData
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
+        public PhoneField(int id, string value) : base(id, value) { }
+
+        public override bool Equals(FieldData other)
+        {
+            if (other is FieldData == false)
+            {
+                return false;
+            }
+            return FieldValue.EndsWith(other.FieldValue) || other.FieldValue.EndsWith(FieldValue);
+        }
+
+        public override string ProcessField(string field)
+        {
+            if (!String.IsNullOrEmpty(field))
+            {
+                field = Regex.Replace(field, @"\D+", "");              //удаление не цифр
+                field = Regex.Replace(field, @"\s+", "");              //удаление пробелов
+                if (field.Length > 6)
+                {
+                    return field;
+                }
+            }
+            return null;
+        }
+    }
+
+    enum FIELD_TYPE
+    {
+        NONE = 0,
+        NAME = 1,
+        PHONE = 2
     }
 }

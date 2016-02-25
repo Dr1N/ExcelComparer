@@ -27,6 +27,16 @@ namespace ExcelComparer
         public MainForm()
         {
             InitializeComponent();
+            InitTypeCombobox();
+        }
+
+        private void InitTypeCombobox()
+        {
+            CBItem cb1 = new CBItem() { Text = "ФИО", Type = FIELD_TYPE.NAME };
+            CBItem cb2 = new CBItem() { Text = "Телефон", Type = FIELD_TYPE.PHONE };
+            cbFieldType.Items.Add(cb1);
+            cbFieldType.Items.Add(cb2);
+            cbFieldType.SelectedIndex = 0;
         }
 
         #region CONTROL EVENTS
@@ -47,8 +57,16 @@ namespace ExcelComparer
                     MessageBox.Show(message, Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-
-                ExcelDbComparer comparer = new ExcelDbComparer(this.file, this.files);
+                
+                if (cbFieldType.SelectedIndex == -1)
+                {
+                    LogWriter.Write("Не выбран тип поля!");
+                    return;
+                }
+                ExcelDbComparer comparer = new ExcelDbComparer(this.file, this.files)
+                {
+                    FieldType = ((CBItem)cbFieldType.SelectedItem).Type
+                };
                 this.workThread = new Thread(comparer.RunWork) { IsBackground = true };
                 this.workThread.Start(this);
             }
@@ -233,5 +251,16 @@ namespace ExcelComparer
         }
 
         #endregion
+    }
+
+    struct CBItem
+    {
+        public string Text;
+        public FIELD_TYPE Type;
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

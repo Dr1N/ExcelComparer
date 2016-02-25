@@ -41,6 +41,7 @@
             this.btnStart = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.cbFieldType = new System.Windows.Forms.ComboBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -152,6 +153,7 @@
             // 
             // flowLayoutPanel3
             // 
+            this.flowLayoutPanel3.Controls.Add(this.cbFieldType);
             this.flowLayoutPanel3.Controls.Add(this.btnStart);
             this.flowLayoutPanel3.Controls.Add(this.btnCancel);
             this.flowLayoutPanel3.Controls.Add(this.linkLabel1);
@@ -163,7 +165,7 @@
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(3, 3);
+            this.btnStart.Location = new System.Drawing.Point(130, 3);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 0;
@@ -173,7 +175,7 @@
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(84, 3);
+            this.btnCancel.Location = new System.Drawing.Point(211, 3);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 1;
@@ -183,14 +185,23 @@
             // 
             // linkLabel1
             // 
-            this.linkLabel1.Location = new System.Drawing.Point(165, 0);
+            this.linkLabel1.Location = new System.Drawing.Point(292, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(277, 32);
+            this.linkLabel1.Size = new System.Drawing.Size(150, 32);
             this.linkLabel1.TabIndex = 2;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "About";
             this.linkLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // cbFieldType
+            // 
+            this.cbFieldType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbFieldType.FormattingEnabled = true;
+            this.cbFieldType.Location = new System.Drawing.Point(3, 3);
+            this.cbFieldType.Name = "cbFieldType";
+            this.cbFieldType.Size = new System.Drawing.Size(121, 21);
+            this.cbFieldType.TabIndex = 3;
             // 
             // MainForm
             // 
@@ -224,6 +235,7 @@
         private System.Windows.Forms.Button btnSelectDirectory;
         private System.Windows.Forms.Button btnSelectFile;
         private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.ComboBox cbFieldType;
     }
 }
 
