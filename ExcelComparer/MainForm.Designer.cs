@@ -38,10 +38,11 @@
             this.lblDataBaseFile = new System.Windows.Forms.Label();
             this.btnSelectFile = new System.Windows.Forms.Button();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+            this.cbFieldType = new System.Windows.Forms.ComboBox();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-            this.cbFieldType = new System.Windows.Forms.ComboBox();
+            this.cbLogs = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -156,12 +157,22 @@
             this.flowLayoutPanel3.Controls.Add(this.cbFieldType);
             this.flowLayoutPanel3.Controls.Add(this.btnStart);
             this.flowLayoutPanel3.Controls.Add(this.btnCancel);
+            this.flowLayoutPanel3.Controls.Add(this.cbLogs);
             this.flowLayoutPanel3.Controls.Add(this.linkLabel1);
             this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel3.Location = new System.Drawing.Point(3, 75);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
             this.flowLayoutPanel3.Size = new System.Drawing.Size(453, 29);
             this.flowLayoutPanel3.TabIndex = 2;
+            // 
+            // cbFieldType
+            // 
+            this.cbFieldType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbFieldType.FormattingEnabled = true;
+            this.cbFieldType.Location = new System.Drawing.Point(3, 3);
+            this.cbFieldType.Name = "cbFieldType";
+            this.cbFieldType.Size = new System.Drawing.Size(121, 21);
+            this.cbFieldType.TabIndex = 3;
             // 
             // btnStart
             // 
@@ -185,23 +196,25 @@
             // 
             // linkLabel1
             // 
-            this.linkLabel1.Location = new System.Drawing.Point(292, 0);
+            this.linkLabel1.Location = new System.Drawing.Point(355, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(150, 32);
+            this.linkLabel1.Size = new System.Drawing.Size(84, 32);
             this.linkLabel1.TabIndex = 2;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "About";
             this.linkLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
-            // cbFieldType
+            // cbLogs
             // 
-            this.cbFieldType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbFieldType.FormattingEnabled = true;
-            this.cbFieldType.Location = new System.Drawing.Point(3, 3);
-            this.cbFieldType.Name = "cbFieldType";
-            this.cbFieldType.Size = new System.Drawing.Size(121, 21);
-            this.cbFieldType.TabIndex = 3;
+            this.cbLogs.Checked = true;
+            this.cbLogs.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbLogs.Location = new System.Drawing.Point(292, 3);
+            this.cbLogs.Name = "cbLogs";
+            this.cbLogs.Size = new System.Drawing.Size(57, 24);
+            this.cbLogs.TabIndex = 4;
+            this.cbLogs.Text = "Логи";
+            this.cbLogs.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
@@ -236,6 +249,7 @@
         private System.Windows.Forms.Button btnSelectFile;
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.ComboBox cbFieldType;
+        private System.Windows.Forms.CheckBox cbLogs;
     }
 }
 

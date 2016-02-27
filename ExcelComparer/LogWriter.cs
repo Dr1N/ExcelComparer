@@ -22,19 +22,23 @@ namespace ExcelComparer
 
         static LogWriter()
         {
-            Mode = LOG_MODE.DEBUG | LOG_MODE.WINDOW | LOG_MODE.FILE;
+            Mode = LOG_MODE.NONE;
             logForm = LogForm.Instance;
         }
         
         public static void Write(string message)
         {
+            if (Mode == LOG_MODE.NONE)
+            {
+                return;
+            }
             bool isDebug = (Mode & LOG_MODE.DEBUG) == LOG_MODE.DEBUG;
             bool isConsole = (Mode & LOG_MODE.CONSOLE) == LOG_MODE.DEBUG;
             bool isFile = (Mode & LOG_MODE.FILE) == LOG_MODE.FILE;
             bool isWindow = (Mode & LOG_MODE.WINDOW) == LOG_MODE.WINDOW;
 
             DateTime dt = DateTime.Now;
-            string dateTime = dt.ToShortDateString() + " " + dt.ToLongTimeString();
+            string dateTime = dt.ToShortDateString() + " " + dt.ToLongTimeString() + "." + dt.Millisecond.ToString();
 
             if(isDebug)
             {

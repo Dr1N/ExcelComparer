@@ -28,6 +28,14 @@ namespace ExcelComparer
         {
             InitializeComponent();
             InitTypeCombobox();
+            LogWriter.Mode = LOG_MODE.FILE;
+#if DEBUG
+            this.file = @"d:\My Coding\KWORK\Files\file1.xlsx";
+            this.directory = @"d:\My Coding\KWORK\Files\Dir\";
+            this.lblDataBaseFile.Text = this.file;
+            this.lblDirectoryPath.Text = this.directory;
+            LogWriter.Mode |= LOG_MODE.DEBUG | LOG_MODE.CONSOLE;
+#endif
         }
 
         private void InitTypeCombobox()
@@ -43,13 +51,19 @@ namespace ExcelComparer
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            if(LogForm.Instance.Visible == false)
-            { 
-                LogForm.Instance.Show();
+            if (cbLogs.Checked == true)
+            {
+                LogWriter.Mode |= LOG_MODE.WINDOW;
             }
             try
             {
+                if ((LogWriter.Mode & LOG_MODE.WINDOW) == LOG_MODE.WINDOW)
+                {
+                    LogForm.Instance.Show();
+                }
+
                 GetFileList();
+
                 if (!IsValidSettings())
                 {
                     string message = "Неверные настройки программы. Смотри логи работы программы";
@@ -153,6 +167,8 @@ namespace ExcelComparer
                 btnSelectDirectory.Enabled = false;
                 btnSelectFile.Enabled = false;
                 linkLabel1.Enabled = false;
+                cbFieldType.Enabled = false;
+                cbLogs.Enabled = false;
                 Text = "Excel Comparer [Идёт обработка...]";
             }
         }
@@ -171,6 +187,8 @@ namespace ExcelComparer
                 btnSelectDirectory.Enabled = true;
                 btnSelectFile.Enabled = true;
                 linkLabel1.Enabled = true;
+                cbFieldType.Enabled = true;
+                cbLogs.Enabled = true;
                 Text = "Excel Comparer [Обработка завершена]";
             }
         }
@@ -253,6 +271,9 @@ namespace ExcelComparer
         #endregion
     }
 
+    /// <summary>
+    /// Элемент комбобокса - тип анализируемого поля
+    /// </summary>
     struct CBItem
     {
         public string Text;

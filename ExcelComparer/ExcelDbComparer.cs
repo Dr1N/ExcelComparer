@@ -21,6 +21,7 @@ namespace ExcelComparer
         private string connectionString = "Provider=Microsoft.ACE.OLEDB.12.0;extended properties =\"excel 8.0;hdr=no;IMEX=1\";data source={0}";
         private string sheetName = "Лист1";
         private string currentFile = "";
+        private readonly int logRangeForWrite = 1000;
 
         #endregion
 
@@ -33,6 +34,8 @@ namespace ExcelComparer
             this.file = file;
             this.fileList = list;
         }
+
+        #region METHODS
 
         public void RunWork(object frm)
         {
@@ -47,11 +50,13 @@ namespace ExcelComparer
                 LogWriter.Write("Не указан тип поля");
                 return;
             }
+
             try
             {
                 form.StartWork();
 
                 LogWriter.Write("Анализируемый файл: " + this.file);
+                LogWriter.Write("Тип поля: " + this.FieldType);
                 LogWriter.Write("Файлы для сравнения:");
                 foreach (string f in this.fileList)
                 {
@@ -61,25 +66,30 @@ namespace ExcelComparer
                 DataTable dtForAnalyze = ReadExcelFile(this.file);
                 List<FieldData> fieldsForAnalyze = ReadFieldFromData(dtForAnalyze);
                 List<FieldData> allDublicates = new List<FieldData>();
+
                 foreach (string f in this.fileList)
                 {
                     this.currentFile = f;
                     LogWriter.Write("Поиск дубликатов в файле: " + f);
                     DataTable dtBase = ReadExcelFile(f);
                     List<FieldData> fieldsForCompare = ReadFieldFromData(dtBase);
+                    LogWriter.Write("Анализ дубликатов...");
                     List<FieldData> dublicates = GetDuplicateList(fieldsForAnalyze, fieldsForCompare);
+                    LogWriter.Write("Анализ дубликатов завершён");
                     allDublicates.AddRange(dublicates);
                 }
 
                 LogWriter.Write("Всего найдено дубликатов: " + allDublicates.Count);
 
-                DeleteDublicates(dtForAnalyze, allDublicates);
+                if (allDublicates.Count > 0)
+                {
+                    DeleteDublicates(dtForAnalyze, allDublicates);
+                    LogWriter.Write("Дубликаты удалены");
+                    SaveDataTableInExcelFormat(dtForAnalyze);
+                    LogWriter.Write("Результат сохранён: " + Path.GetFullPath(Path.GetFileNameWithoutExtension(this.file) + "_filtered" + Path.GetExtension(this.file)));
+                }
 
-                LogWriter.Write("Дубликаты удалены");
-
-                SaveDataTableInExcelFormat(dtForAnalyze);
-
-                LogWriter.Write("Результат сохранён: " + Path.GetFullPath(Path.GetFileNameWithoutExtension(this.file) + "_filtered" + Path.GetExtension(this.file)));
+                LogWriter.Write("Обработка завершена");
             }
             catch(Exception e)
             {
@@ -181,40 +191,70 @@ namespace ExcelComparer
             LogWriter.Write("=======================================");
             List<FieldData> result = new List<FieldData>();
             int id = 0;
+            List<string> logs = new List<string>();
             foreach (DataRow row in data.Rows)
             {
                 string rawField = row[this.FOIColumnIndex].ToString().ToLower().Trim();
-                FieldData fd = null;
-                switch (FieldType)
-                {
-                    case FIELD_TYPE.NAME:
-                        fd = new NameField(id, rawField);
-                        break;
-                    case FIELD_TYPE.PHONE:
-                        fd = new PhoneField(id, rawField);
-                        break;
-                    default:
-                        LogWriter.Write("Не известный тип поля: " + FieldType);
-                        break;
-                }
+                FieldData fd = GetFieldData(id, rawField);
                 if (fd.FieldValue != null)
                 {
                     result.Add(fd);
                 }
                 else
                 {
-                    LogWriter.Write(String.Format("Запись: {0}. Поле: {1} - Не валидна!", id, 
-                        !String.IsNullOrEmpty(row[this.FOIColumnIndex].ToString()) ? row[this.FOIColumnIndex].ToString() : "<Нет значения>" ));
+                    logs.Add(String.Format("Запись: {0}. Поле: {1} - Не валидна!", id,
+                        !String.IsNullOrEmpty(row[this.FOIColumnIndex].ToString()) ? row[this.FOIColumnIndex].ToString() : "<Нет значения>"));
+                }
+                if (logs.Count >= logRangeForWrite)
+                {
+                    PrintLogs(logs);
                 }
                 id++;
+            }
+
+            if (logs.Count > 0)
+            {
+                PrintLogs(logs);
             }
 
             LogWriter.Write("Прочитано валидных полей из файла: " + result.Count);
 
             return result;
         }
+
+        private void PrintLogs(List<string> logs)
+        {
+            string mess = String.Join(Environment.NewLine, logs.ToArray());
+            LogWriter.Write(mess);
+            logs.Clear();
+        }
+
+        private FieldData GetFieldData(int id, string field)
+        {
+            FieldData result = null;
+            switch (FieldType)
+            {
+                case FIELD_TYPE.NAME:
+                    result = new NameField(id, field);
+                    break;
+                case FIELD_TYPE.PHONE:
+                    result = new PhoneField(id, field);
+                    break;
+                default:
+                    LogWriter.Write("Не известный тип поля: " + FieldType);
+                    break;
+            }
+            return result;
+        }
+
+        #endregion
     }
 
+    #region MISC
+
+    /// <summary>
+    /// База для классов полей
+    /// </summary>
     abstract class FieldData : IEquatable<FieldData>
     {
         public int ID { get; set; }
@@ -229,6 +269,9 @@ namespace ExcelComparer
         public abstract bool Equals(FieldData other);
     }
 
+    /// <summary>
+    /// Поле с ФИО
+    /// </summary>
     class NameField : FieldData
     {
         public NameField(int id, string value) : base(id, value) { }
@@ -263,6 +306,9 @@ namespace ExcelComparer
         }
     }
 
+    /// <summary>
+    /// Поле с телефоном
+    /// </summary>
     class PhoneField : FieldData
     {
         public PhoneField(int id, string value) : base(id, value) { }
@@ -273,7 +319,8 @@ namespace ExcelComparer
             {
                 return false;
             }
-            return FieldValue.EndsWith(other.FieldValue) || other.FieldValue.EndsWith(FieldValue);
+            bool res = FieldValue.EndsWith(other.FieldValue) || other.FieldValue.EndsWith(FieldValue);
+            return res;
         }
 
         public override string ProcessField(string field)
@@ -282,8 +329,9 @@ namespace ExcelComparer
             {
                 field = Regex.Replace(field, @"\D+", "");              //удаление не цифр
                 field = Regex.Replace(field, @"\s+", "");              //удаление пробелов
-                if (field.Length > 6)
+                if (field.Length > 6 && field.Length <= 12)
                 {
+                    System.Diagnostics.Debug.WriteLine("Прочитанный телефон: " + field, "dr1n");
                     return field;
                 }
             }
@@ -291,10 +339,15 @@ namespace ExcelComparer
         }
     }
 
+    /// <summary>
+    /// Тип обрабатываемого поля
+    /// </summary>
     enum FIELD_TYPE
     {
         NONE = 0,
         NAME = 1,
         PHONE = 2
     }
+
+    #endregion
 }
