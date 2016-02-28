@@ -140,6 +140,7 @@ namespace ExcelComparer
         private List<FieldData> GetDuplicateList(List<FieldData> analyzed, List<FieldData> forcompare)
         {
             List<FieldData> result = new List<FieldData>();
+            List<string> logs = new List<string>();
             foreach (FieldData analizedField in analyzed)
             {
                 foreach (FieldData fieldForCompare in forcompare)
@@ -148,10 +149,12 @@ namespace ExcelComparer
                     {
                         result.Add(analizedField);
                         string message = String.Format("Найден дуликат: {0} : {1} = {2} : {3}", analizedField.ID, fieldForCompare.FieldValue, fieldForCompare.ID, fieldForCompare.FieldValue);
-                        LogWriter.Write(message);
+                        logs.Add(message);
                     }
+                    PrintLogs(logs);
                 }
             }
+            PrintLogs(logs, true);
             LogWriter.Write(String.Format("Всего найдено дубликатов в файле [{0}]: {1} ", this.currentFile, result.Count));
             return result;
         }
@@ -205,28 +208,24 @@ namespace ExcelComparer
                     logs.Add(String.Format("Запись: {0}. Поле: {1} - Не валидна!", id,
                         !String.IsNullOrEmpty(row[this.FOIColumnIndex].ToString()) ? row[this.FOIColumnIndex].ToString() : "<Нет значения>"));
                 }
-                if (logs.Count >= logRangeForWrite)
-                {
-                    PrintLogs(logs);
-                }
+                PrintLogs(logs);
                 id++;
             }
-
-            if (logs.Count > 0)
-            {
-                PrintLogs(logs);
-            }
+            PrintLogs(logs, true);
 
             LogWriter.Write("Прочитано валидных полей из файла: " + result.Count);
 
             return result;
         }
 
-        private void PrintLogs(List<string> logs)
+        private void PrintLogs(List<string> logs, bool print = false)
         {
-            string mess = String.Join(Environment.NewLine, logs.ToArray());
-            LogWriter.Write(mess);
-            logs.Clear();
+            if (print || logs.Count > logRangeForWrite)
+            {
+                string mess = String.Join(Environment.NewLine, logs.ToArray());
+                LogWriter.Write(mess);
+                logs.Clear();
+            }
         }
 
         private FieldData GetFieldData(int id, string field)
